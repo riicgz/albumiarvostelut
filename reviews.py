@@ -26,3 +26,7 @@ def update_review(review_id, title, description):
                                 description = ?
                             WHERE id = ?"""
     db.execute(sql, [title, description, review_id])
+
+def remove_review(review_id):
+    sql = "DELETE FROM reviews WHERE id = ?"
+    db.execute(sql, [review_id])
