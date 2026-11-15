@@ -10,11 +10,19 @@ def get_reviews():
     return db.query(sql)
 
 def get_review(review_id):
-    sql = """SELECT reviews.title,
+    sql = """SELECT reivews.id,
+                    reviews.title,
                     reviews.description,
                     reviews.verdict,
+                    users.id user_id,
                     users.username
              FROM reviews, users
              WHERE reviews.user_id = users.id AND
              reviews.id = ?"""
     return db.query(sql, [review_id])[0]
+
+def update_review(review_id, title, description):
+    sql = """UPDATE reviews SET title = ?,
+                                description = ?
+                            WHERE id = ?"""
+    db.execute(sql, [title, description, review_id])
