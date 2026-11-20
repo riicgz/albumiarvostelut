@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request, session
-from werkezug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
 import reviews
@@ -13,6 +13,16 @@ app.secret_key =  config.secret_key
 def index():
     all_reviews = reviews.get_reviews()
     return render_template("index.html", reviews=all_reviews)
+
+@app.route("/find_review")
+def find_review():
+    query = request.args.get("query")
+    if query:
+        results: reviews.find_reviews(query)
+    else:
+        query = ""
+        results = []
+    return render_template("find_review.html", query=query, results=results)
 
 @app.route("/review/<int:review_id>")
 def show_review(review_id):
@@ -66,7 +76,7 @@ def remove_review(review_id):
 def register():
     return render_template("register.html")
 
-@app.route("/create", methods="POST")
+@app.route("/create", methods=["POST"])
 def createl():
     username = request.form["username"]
     password1 = request.form["password1"]
