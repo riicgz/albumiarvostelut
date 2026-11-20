@@ -9,6 +9,10 @@ import reviews
 app = Flask(__name__)
 app.secret_key =  config.secret_key
 
+def require_login():
+    if "user_id" not in session:
+        abort(403)
+
 @app.route("/")
 def index():
     all_reviews = reviews.get_reviews()
@@ -33,10 +37,13 @@ def show_review(review_id):
 
 @app.route("/new_review")
 def new_review():
+    require_login()
     return render_template("new_review.html")
 
 @app.route("/create_review", methods=["POST"])
 def create_review():
+    require_login()
+
     title = request.form["title"]
     description = request.form["description"]
     verdict = request.form["verdict"]
@@ -48,6 +55,7 @@ def create_review():
 
 @app.route("/edit_review/<int:review_id>")
 def edit_review(review_id):
+    require_login()
     review = reviews.get_review(review_id)
     if not review:
         abort(404)
@@ -57,6 +65,7 @@ def edit_review(review_id):
 
 @app.route("/update_review", methods=["POST"])
 def update_review():
+    require_login()
     review_id = request.form["review_id"]
     review = reviews.get_review(review_id)
     if not review:
@@ -73,6 +82,7 @@ def update_review():
 
 @app.route("/remove_review/<int:review_id>", methods=["GET", "POST"])
 def remove_review(review_id):
+    require_login()
     review = reviews.get_review(review_id)
     if not review:
         abort(404)
@@ -133,6 +143,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["user_id"]
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"]
+        del session["username"]
     return redirect("/")
