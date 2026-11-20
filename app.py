@@ -27,6 +27,8 @@ def find_review():
 @app.route("/review/<int:review_id>")
 def show_review(review_id):
     review = reviews.get_review(review_id)
+    if not review:
+        abort(404)
     return render_template("show_review.html", review=review)
 
 @app.route("/new_review")
@@ -47,6 +49,8 @@ def create_review():
 @app.route("/edit_review/<int:review_id>")
 def edit_review(review_id):
     review = reviews.get_review(review_id)
+    if not review:
+        abort(404)
     if review["user_id"] != session["user_id"]:
         abort(403)
     return render_template("edit_review.html", review=review)
@@ -55,6 +59,8 @@ def edit_review(review_id):
 def update_review():
     review_id = request.form["review_id"]
     review = reviews.get_review(review_id)
+    if not review:
+        abort(404)
     if review["user_id"] != session["user_id"]:
         abort(403)
 
@@ -68,6 +74,8 @@ def update_review():
 @app.route("/remove_review/<int:review_id>", methods=["GET", "POST"])
 def remove_review(review_id):
     review = reviews.get_review(review_id)
+    if not review:
+        abort(404)
     if review["user_id"] != session["user_id"]:
         abort(403)
 
